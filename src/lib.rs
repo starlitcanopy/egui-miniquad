@@ -168,7 +168,7 @@ impl EguiMq {
     pub fn run(
         &mut self,
         mq_ctx: &mut dyn mq::RenderingBackend,
-        run_ui: impl FnOnce(&mut dyn mq::RenderingBackend, &egui::Context),
+        run_ui: impl FnMut(&egui::Context),
     ) {
         input::on_frame_start(&mut self.egui_input, &self.egui_ctx);
 
@@ -182,9 +182,7 @@ impl EguiMq {
                 .native_pixels_per_point = Some(self.native_dpi_scale);
         }
 
-        let full_output = self
-            .egui_ctx
-            .run(self.egui_input.take(), |egui_ctx| run_ui(mq_ctx, egui_ctx));
+        let full_output = self.egui_ctx.run(self.egui_input.take(), run_ui);
 
         let egui::FullOutput {
             platform_output,
